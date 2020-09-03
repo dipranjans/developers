@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { Link, useHistory } from "react-router-dom";
 
 const FeaturedDevelopers = () => {
+  const history = useHistory();
   const [loader, setLoader] = useState(false);
   const [developers, setDevelopers] = useState([]);
 
@@ -10,13 +12,32 @@ const FeaturedDevelopers = () => {
       fetch(`http://localhost:3000/items`)
         .then(res => res.json())
         .then(data => {
-          console.log(data);
+          //console.log(data);
           setDevelopers(data);
           setLoader(false);
         });
     }
     fetchData();
   }, []);
+
+  // delete user
+  const deleteUser = id => {
+    fetch(`http://localhost:3000/items/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        history.push("/");
+      })
+      .catch(err => {
+        console.log(err);
+        history.push("/");
+      });
+  };
+
   return (
     <>
       <div className="row mt-3">
@@ -36,7 +57,7 @@ const FeaturedDevelopers = () => {
             } = res;
             return (
               <div
-                className="p-2 mr-2 mb-3"
+                className="test p-2 mr-2 mb-3"
                 style={{
                   width: "250px",
                   border: "1px solid #b7bfbd",
@@ -45,17 +66,37 @@ const FeaturedDevelopers = () => {
                 }}
                 key={id}
               >
+                <div className="developers__edit">
+                  <span style={{ cursor: "pointer", color: "#007bff" }}>
+                    <Link to={`/edit/${id}`}>
+                      {/* <i
+                        className="fa fa-edit"
+                        style="font-size:24px;color:red"
+                      ></i> */}
+                      Edit
+                    </Link>
+                  </span>
+                  <br />
+                  <span
+                    style={{ cursor: "pointer", color: "#007bff" }}
+                    onClick={deleteUser(id)}
+                  >
+                    Delete
+                  </span>
+                </div>
                 <div style={{ display: "flex" }}>
-                  <img
-                    src={logo}
-                    alt={imgTitle}
-                    width="70"
-                    style={{
-                      border: "1px solid #cac5ca",
-                      padding: "8px",
-                      marginRight: "5px"
-                    }}
-                  />
+                  <Link to={`/edit/${id}`}>
+                    <img
+                      src={logo}
+                      alt={imgTitle}
+                      width="70"
+                      style={{
+                        border: "1px solid #cac5ca",
+                        padding: "8px",
+                        marginRight: "5px"
+                      }}
+                    />
+                  </Link>
                   <div>
                     <strong>{title}</strong>
                     <br />
